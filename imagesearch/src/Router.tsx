@@ -4,7 +4,7 @@ import ErrorPage from "./pages/ErrorPage";
 import Layout from "./pages/Layout";
 import Homepage from "./pages/Homepage";
 
-const Router = createBrowserRouter([
+export const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
@@ -22,5 +22,3 @@ const Router = createBrowserRouter([
     ],
   },
 ]);
-
-export default Router;
