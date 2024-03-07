@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 
 interface IImage {
@@ -10,30 +10,42 @@ interface IImage {
 const Homepage = () => {
   const { isAuthenticated } = useAuth0();
   const [images, setImages] = useState<IImage[]>([]);
-  const [customSearch, setCustomSearch] = useState();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [spelling, setSpelling] = useState<string | null>("");
 
-  useEffect(() => {
-    const search = async () => {
-      try {
-        const response = await axios.get(
-          `https://www.googleapis.com/customsearch/v1?key=${
-            import.meta.env.VITE_GOOGLE_API_KEY
-          }&cx=${
-            import.meta.env.VITE_GOOGLE_SEARCH_ENGINE_ID
-          }&num=10&searchType=image&q=stockholm`
-        );
-        console.log(search);
-        setImages(response.data.items);
-      } catch (error) {
-        console.error("Error fetching images", error);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    doSearch(searchQuery);
+  };
+
+  const doSearch = async (searchQuery: string) => {
+    try {
+      const response = await axios.get(
+        `https://www.googleapis.com/customsearch/v1?key=${
+          import.meta.env.VITE_GOOGLE_API_KEY
+        }&cx=${
+          import.meta.env.VITE_GOOGLE_SEARCH_ENGINE_ID
+        }&num=10&searchType=image&q=${searchQuery}`
+      );
+      console.log("API Response:", response.data);
+      setImages(response.data.items);
+      if (response.data.spelling && response.data.spelling.correctedQuery) {
+        setSpelling(response.data.spelling.correctedQuery);
+      } else {
+        setSpelling(null);
       }
-    };
-    search();
-  }, []);
+    } catch (error) {
+      console.error("Error fetching images!!!", error);
+    }
+  };
 
-  const handleSubmit = (React.FormEventHandler<HTMLFormElement>) => {
-    
-  }
+  const handleSuggestionClick = async (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    suggestedQuery: string
+  ) => {
+    setSearchQuery(suggestedQuery);
+    doSearch(suggestedQuery);
+  };
 
   return (
     <>
@@ -52,18 +64,31 @@ const Homepage = () => {
               {" "}
               {!isAuthenticated && <p>SnapSearch is just a login away!</p>}
             </div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <label>
                 <input
                   type="text"
                   name="searchfield"
                   placeholder="Search for images..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </label>
-              <button type="submit">Submit</button>
+              <input type="submit" value={"Submit"}></input>
             </form>
             <div>
-              <p>Did you mean ""?</p>
+              {spelling && (
+                <p>
+                  {`Did you mean `}
+                  <a
+                    href="#"
+                    onClick={(e) => handleSuggestionClick(e, spelling)}
+                  >
+                    {spelling}
+                  </a>
+                  ?
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -72,7 +97,7 @@ const Homepage = () => {
             <div key={index}>
               <img
                 src={image.link}
-                alt={image.kind}
+                alt={`${image.kind} ${searchQuery}`}
                 className="rounded-md m-2"
               />
             </div>
