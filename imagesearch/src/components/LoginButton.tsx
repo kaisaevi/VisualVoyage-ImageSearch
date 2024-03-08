@@ -5,6 +5,7 @@ const LoginButton = () => {
   return (
     !isAuthenticated && (
       <button
+        className="bg-brown text-light py-1 px-3 rounded-md hover:bg-purple shadow-lg"
         onClick={() => {
           loginWithRedirect();
         }}

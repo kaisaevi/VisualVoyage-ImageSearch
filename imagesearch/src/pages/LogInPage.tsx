@@ -3,8 +3,7 @@ import LogoutButton from "../components/LogoutButton";
 
 const LogInPage = () => {
   return (
-    <main className="bg-light flex flex-col">
-      <h1>Auth0 Login</h1>
+    <main className="flex flex-col">
       <LoginButton />
       <LogoutButton />
     </main>
