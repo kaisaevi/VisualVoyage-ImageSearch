@@ -1,6 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import axios from "axios";
+import { NavLink } from "react-router-dom";
 
 interface IImage {
   link: string;
@@ -12,6 +13,7 @@ const Homepage = () => {
   const [images, setImages] = useState<IImage[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [spelling, setSpelling] = useState<string | null>("");
+  const [searchTime, setSearchTime] = useState<number>();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,6 +31,7 @@ const Homepage = () => {
       );
       console.log("API Response:", response.data);
       setImages(response.data.items);
+      setSearchTime(response.data.searchInformation.searchTime);
       if (response.data.spelling && response.data.spelling.correctedQuery) {
         setSpelling(response.data.spelling.correctedQuery);
       } else {
@@ -49,21 +52,23 @@ const Homepage = () => {
 
   return (
     <>
-      <main className="bg-beige ">
-        <div className="flex justify-center">
-          <div className="w-[100px] h-[100px] m-2">
+      <main>
+        <div>
+          <NavLink to="/">
             <img
-              className="rounded-md border border-gray-400"
-              src="/logo.png"
-              alt="camera logo"
-            ></img>
-          </div>
-          <div>
-            <h2 className="text-5xl text-purple">SnapSearch</h2>
-            <div>
-              {" "}
-              {!isAuthenticated && <p>SnapSearch is just a login away!</p>}
-            </div>
+              className="h-[220px] mx-auto"
+              src="/visualvoyage.png"
+              alt="visualvoyage logo"
+            />
+          </NavLink>
+        </div>
+        <div className="flex items-center flex-col">
+          {!isAuthenticated && (
+            <p className="text-purple m-3">
+              Visual Voyage is just a login away!
+            </p>
+          )}
+          {isAuthenticated && (
             <form onSubmit={handleSubmit}>
               <label>
                 <input
@@ -72,10 +77,18 @@ const Homepage = () => {
                   placeholder="Search for images..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  className="text-purple bg-light rounded-md py-2 px-1 m-2 shadow-lg"
                 />
               </label>
-              <input type="submit" value={"Submit"}></input>
+              <button
+                className="bg-brown text-light py-1 px-3 rounded-md hover:bg-purple shadow-lg"
+                type="submit"
+              >
+                Submit
+              </button>
             </form>
+          )}
+          {!isAuthenticated && (
             <div>
               {spelling && (
                 <p>
@@ -89,8 +102,11 @@ const Homepage = () => {
                   ?
                 </p>
               )}
+              {searchTime && (
+                <p className="text-brown">Searchtime: {searchTime}s</p>
+              )}
             </div>
-          </div>
+          )}
         </div>
         <div className="grid grid-cols-3 gap-4 mt-8">
           {images.map((image, index) => (
@@ -98,7 +114,7 @@ const Homepage = () => {
               <img
                 src={image.link}
                 alt={`${image.kind} ${searchQuery}`}
-                className="rounded-md m-2"
+                className="rounded-md m-2 shadow-lg"
               />
             </div>
           ))}
