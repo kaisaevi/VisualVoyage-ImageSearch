@@ -3,10 +3,10 @@ import Navbar from "../components/Navbar";
 
 const Layout = () => {
   return (
-    <div>
+    <div className="flex flex-col min-h-[100vh]">
       <>
         <Navbar />
-        <main className="bg-beige h-screen">
+        <main className="bg-beige flex-grow">
           <Outlet />
         </main>
       </>

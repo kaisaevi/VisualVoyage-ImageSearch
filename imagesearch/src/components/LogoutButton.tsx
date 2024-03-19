@@ -8,7 +8,7 @@ const LogoutButton = () => {
         className="bg-brown text-light py-1 px-3 rounded-md hover:bg-purple shadow-lg"
         onClick={() => logout()}
       >
-        Sign Out
+        Log Out
       </button>
     )
   );

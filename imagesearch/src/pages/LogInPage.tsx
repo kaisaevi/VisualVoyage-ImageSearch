@@ -3,7 +3,7 @@ import LogoutButton from "../components/LogoutButton";
 
 const LogInPage = () => {
   return (
-    <main className="flex flex-col">
+    <main className="flex justify-center mt-10">
       <LoginButton />
       <LogoutButton />
     </main>

@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { FaStar } from "react-icons/fa";
 
 const Navbar = () => {
   const { isAuthenticated } = useAuth0();
@@ -20,6 +21,9 @@ const Navbar = () => {
             <NavLink to="/login">
               {isAuthenticated ? "LOG OUT" : "LOG IN"}
             </NavLink>
+          </li>
+          <li className="text-beige m-5 hover:text-light hover:scale-110">
+            <NavLink to="/favorites">{isAuthenticated && <FaStar />} </NavLink>
           </li>
         </ul>
       </div>
