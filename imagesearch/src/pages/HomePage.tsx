@@ -1,4 +1,4 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { User, useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
@@ -73,10 +73,13 @@ const HomePage = () => {
     doSearch(suggestedQuery);
   };
 
-  const handleAddToFavorites = async (selectedImage: ImageObject) => {
-    if (user && user.sub) {
-      const userId: string = user.sub;
-      await addToFavorites(selectedImage, userId);
+  const handleAddToFavorites = async (
+    userId: User | undefined,
+    selectedImage: ImageObject
+  ) => {
+    if (userId && userId.sub) {
+      console.log("selected image: ", selectedImage, "user: ", userId);
+      await addToFavorites(selectedImage, userId.sub);
     } else {
       console.error("User is not authenticated.");
     }
@@ -152,7 +155,7 @@ const HomePage = () => {
               <div className="flex items-center justify-center">
                 <button
                   className="flex items-center "
-                  onClick={() => handleAddToFavorites(image)}
+                  onClick={() => handleAddToFavorites(user, image)}
                 >
                   <FaRegStar /> {/* <FaStar /> */}
                   <p className="ml-1">Add to Favorites</p>

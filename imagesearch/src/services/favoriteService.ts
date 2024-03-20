@@ -3,13 +3,13 @@ import { ImageObject } from "../models/ImageObject";
 
 export const addToFavorites = async (
   selectedImage: ImageObject,
-  userId: string
+  id: string
 ) => {
   try {
     const response = await axios.post(
-      "http://localhost:3000/user/:userId/favorites",
+      `http://localhost:3000/user/${id}/favorites`,
       {
-        userid: userId,
+        userId: id,
         imageLink: selectedImage.link,
       }
     );
