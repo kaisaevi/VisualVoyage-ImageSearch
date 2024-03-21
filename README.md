@@ -1,4 +1,3 @@
-
 # Visual Voyage - Image Search
 
 VisualVoyage is a web application built using Express and Node.js, allowing users to search for images on Google and save them for future reference. With this application, users can search for various types of images directly from Google and then store their favorite ones for easy access later on.
@@ -11,7 +10,7 @@ To get started, follow these steps:
 
    ```bash
    https://github.com/kaisaevi/VisualVoyage-ImageSearch.git
-   cd server
+   cd client
    ```
 
 2. Install dependencies:
@@ -26,7 +25,29 @@ To get started, follow these steps:
    npm run dev
    ```
 
-   ## Usage
+4. Open a new terminal
+5. Navigate to servermap:
+
+   ```bash
+   cd server
+   ```
+
+6. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+7. Start the server with Nodemon:
+
+````bash
+  nodemon server
+   ```
+
+````
+
+## Usage
+
+Log in with your google or github account. Search for the images. If you find any images that you like, add them to your favorites!
 
 # VisualVoyage-ImageSearch
-

@@ -1,13 +1,11 @@
 const fs = require("fs").promises;
 const path = require("path");
 const jsonFilePath = path.resolve(__dirname, "../../userData.json");
-// const checkOrCreateUserSchema = require("../schemas/checkOrCreateUserSchema");
-// const addToFavoritesSchema = require("../schemas/addToFavoritesSchema");
 const Joi = require("joi");
+const userSchema = require("../schemas/userSchema");
 
 const checkOrCreateUser = async (req, res) => {
   const data = req.body;
-  console.log(data);
   const userIdFromBody = data.userid;
   try {
     const jsonData = await fs.readFile(jsonFilePath, "utf-8");
@@ -29,7 +27,7 @@ const checkOrCreateUser = async (req, res) => {
       res.json(newUser);
     }
   } catch (error) {
-    console.log("problem reading or writing file" + error);
+    console.error("problem reading or writing file" + error);
   }
 };
 
@@ -37,9 +35,7 @@ const fetchUserData = async (userId) => {
   try {
     const jsonData = await fs.readFile(jsonFilePath, "utf-8");
     let userData = JSON.parse(jsonData);
-    console.log(userId);
     const user = userData.users.find((tmpUser) => tmpUser.userid === userId);
-    console.log(user);
     if (user) return user;
   } catch (error) {
     console.error("Error fetching userdata", error);
@@ -49,7 +45,6 @@ const fetchUserData = async (userId) => {
 
 const fetchUserDataForClient = async (req, res) => {
   const userData = await fetchUserData(req.query.userId);
-  console.log(userData);
   if (userData && userData.favoriteImages) {
     res.json(userData.favoriteImages);
   }
@@ -60,14 +55,18 @@ const addToFavorites = async (req, res) => {
   const selectedImage = req.body.imageLink;
 
   try {
-    if (!userId) {
-      return res.status(400).send("User ID is missing");
-    }
     const user = await fetchUserData(userId);
-    console.log("user:", user);
 
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).send("Användare hittades inte");
+    }
+    const { error, value } = userSchema.validate({
+      userString: userId,
+      favoriteImage: selectedImage,
+    });
+
+    if (error) {
+      return res.status(400).send(error.details[0].message);
     }
 
     if (user.favoriteImages) {
@@ -76,24 +75,36 @@ const addToFavorites = async (req, res) => {
       );
 
       if (isDuplicate) {
-        return res.status(200).send("Image is already in favorites");
+        return res.status(200).send("Bilden finns redan i favoriter");
       } else {
         user.favoriteImages.push(selectedImage);
       }
     } else {
+      console.log("Creating new favorite images");
       user.favoriteImages = [selectedImage];
     }
+
+    // Se till att jsonFilePath är korrekt definierad och pekar på rätt JSON-fil.
+    // Se även till att fetchUserData-funktionen fungerar korrekt.
     const jsonData = await fs.readFile(jsonFilePath, "utf-8");
     let userData = JSON.parse(jsonData);
+
+    // Uppdatera användarens data i den lästa datan.
     userData.users.forEach(function (part, index, array) {
-      array[index] = user;
+      console.log("index " + index + " userId " + array[index].userid);
+      console.log("incoming userid " + user.userid);
+      if (array[index].userid === user.userid) {
+        array[index] = user;
+      }
     });
+
+    // Skriv tillbaka den uppdaterade användardatan till JSON-filen.
     await fs.writeFile(jsonFilePath, JSON.stringify(userData, null, 2));
-    console.log("Before success");
-    res.status(200).send("Image added successfully to favorites");
+
+    res.status(200).send("Bilden lades till i favoriter framgångsrikt");
   } catch (error) {
-    console.error("Error adding image to favorites", error);
-    res.status(500).send("Error adding image to favorites");
+    console.error("Fel vid tillägg av bild till favoriter", error);
+    res.status(500).send("Fel vid tillägg av bild till favoriter");
   }
 };
 
