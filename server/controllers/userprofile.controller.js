@@ -1,6 +1,9 @@
 const fs = require("fs").promises;
 const path = require("path");
 const jsonFilePath = path.resolve(__dirname, "../../userData.json");
+// const checkOrCreateUserSchema = require("../schemas/checkOrCreateUserSchema");
+// const addToFavoritesSchema = require("../schemas/addToFavoritesSchema");
+const Joi = require("joi");
 
 const checkOrCreateUser = async (req, res) => {
   const data = req.body;
@@ -55,11 +58,7 @@ const fetchUserDataForClient = async (req, res) => {
 const addToFavorites = async (req, res) => {
   const userId = req.body.userId;
   const selectedImage = req.body.imageLink;
-  console.log(selectedImage);
-  console.log("KAISA");
 
-  console.log(userId);
-  console.log("FELIX!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   try {
     if (!userId) {
       return res.status(400).send("User ID is missing");
