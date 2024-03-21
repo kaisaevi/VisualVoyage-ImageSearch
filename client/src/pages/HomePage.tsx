@@ -1,19 +1,34 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { useState } from "react";
+import { User, useAuth0 } from "@auth0/auth0-react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
+import { FaRegStar } from "react-icons/fa";
+import { addToFavorites } from "../services/favoriteService";
+import { ImageObject } from "../models/ImageObject";
+// import { FaStar } from "react-icons/fa6";
 
-interface IImage {
-  link: string;
-  kind: string;
-}
-
-const Homepage = () => {
-  const { isAuthenticated } = useAuth0();
-  const [images, setImages] = useState<IImage[]>([]);
+const HomePage = () => {
+  const { isAuthenticated, user } = useAuth0();
+  const [images, setImages] = useState<ImageObject[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [spelling, setSpelling] = useState<string | null>("");
   const [searchTime, setSearchTime] = useState<number>();
+
+  useEffect(() => {
+    const checkOrCreateUser = async () => {
+      if (isAuthenticated && user) {
+        try {
+          await axios.post("http://localhost:3000/user/check-or-create-user", {
+            userid: user.sub,
+          });
+        } catch (error) {
+          console.error("Error checking or creating user:", error);
+        }
+      }
+    };
+
+    checkOrCreateUser();
+  }, [isAuthenticated, user]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,6 +47,14 @@ const Homepage = () => {
       console.log("API Response:", response.data);
       setImages(response.data.items);
       setSearchTime(response.data.searchInformation.searchTime);
+      let imageObjects: ImageObject[] = [];
+      if (response.data.items) {
+        imageObjects = response.data.items.map((item: any): ImageObject => {
+          return new ImageObject(item.link, item.kind);
+        });
+        setImages((prevImages) => [...prevImages, ...imageObjects]);
+      }
+
       if (response.data.spelling && response.data.spelling.correctedQuery) {
         setSpelling(response.data.spelling.correctedQuery);
       } else {
@@ -48,6 +71,18 @@ const Homepage = () => {
   ) => {
     setSearchQuery(suggestedQuery);
     doSearch(suggestedQuery);
+  };
+
+  const handleAddToFavorites = async (
+    userId: User | undefined,
+    selectedImage: ImageObject
+  ) => {
+    if (userId && userId.sub) {
+      console.log("selected image: ", selectedImage, "user: ", userId);
+      await addToFavorites(selectedImage, userId.sub);
+    } else {
+      console.error("User is not authenticated.");
+    }
   };
 
   return (
@@ -88,7 +123,7 @@ const Homepage = () => {
               </button>
             </form>
           )}
-          {!isAuthenticated && (
+          {isAuthenticated && (
             <div>
               {spelling && (
                 <p>
@@ -96,6 +131,7 @@ const Homepage = () => {
                   <a
                     href="#"
                     onClick={(e) => handleSuggestionClick(e, spelling)}
+                    className="font-bold"
                   >
                     {spelling}
                   </a>
@@ -116,6 +152,15 @@ const Homepage = () => {
                 alt={`${image.kind} ${searchQuery}`}
                 className="rounded-md m-2 shadow-lg"
               />
+              <div className="flex items-center justify-center">
+                <button
+                  className="flex items-center "
+                  onClick={() => handleAddToFavorites(user, image)}
+                >
+                  <FaRegStar /> {/* <FaStar /> */}
+                  <p className="ml-1">Add to Favorites</p>
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -123,5 +168,4 @@ const Homepage = () => {
     </>
   );
 };
-
-export default Homepage;
+export default HomePage;
