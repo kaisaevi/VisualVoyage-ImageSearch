@@ -84,21 +84,22 @@ const addToFavorites = async (req, res) => {
       user.favoriteImages = [selectedImage];
     }
 
-    // Se till att jsonFilePath är korrekt definierad och pekar på rätt JSON-fil.
-    // Se även till att fetchUserData-funktionen fungerar korrekt.
+    // Make sure that jsonFilePath is correctly defined and points to the right JSON file.
+    // Also, ensure that the fetchUserData function works correctly.
+
     const jsonData = await fs.readFile(jsonFilePath, "utf-8");
     let userData = JSON.parse(jsonData);
 
-    // Uppdatera användarens data i den lästa datan.
+    // Update the user's data in the read data.
     userData.users.forEach(function (part, index, array) {
-      console.log("index " + index + " userId " + array[index].userid);
+      console.log("index ", index, " userId ", array[index].userid);
       console.log("incoming userid " + user.userid);
       if (array[index].userid === user.userid) {
         array[index] = user;
       }
     });
 
-    // Skriv tillbaka den uppdaterade användardatan till JSON-filen.
+    // Write back the updated userdata to the JSON file.
     await fs.writeFile(jsonFilePath, JSON.stringify(userData, null, 2));
 
     res.status(200).send("Bilden lades till i favoriter framgångsrikt");
