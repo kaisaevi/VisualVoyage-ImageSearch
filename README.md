@@ -44,7 +44,7 @@ To get started, follow these steps:
    nodemon server
    ```
 
-8. Create a new .env file in root of your project and add following with your own keys:
+8. Create a new .env file in root of your client map and add following with your own keys:
    ```bash
    VITE_AUTH0_DOMAIN=
    VITE_AUTH0_CLIENT_ID=
@@ -52,7 +52,7 @@ To get started, follow these steps:
    VITE_GOOGLE_SEARCH_ENGINE_ID=
    ```
 
-9. Browse to: http://localhost:5173/
+10. Browse to: http://localhost:5173/
 
 
 ## Usage
