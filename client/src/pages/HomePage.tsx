@@ -44,7 +44,6 @@ const HomePage = () => {
           import.meta.env.VITE_GOOGLE_SEARCH_ENGINE_ID
         }&num=10&searchType=image&q=${searchQuery}`
       );
-      console.log("API Response:", response.data);
       setImages(response.data.items);
       setSearchTime(response.data.searchInformation.searchTime);
       let imageObjects: ImageObject[] = [];
@@ -78,7 +77,6 @@ const HomePage = () => {
     selectedImage: ImageObject
   ) => {
     if (userId && userId.sub) {
-      console.log("selected image: ", selectedImage, "user: ", userId);
       await addToFavorites(selectedImage, userId.sub);
     } else {
       console.error("User is not authenticated.");

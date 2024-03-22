@@ -12,11 +12,9 @@ const FavoritesPage = () => {
     const fetchFavoriteImages = async () => {
       try {
         if (user && user.sub) {
-          console.log(user.sub);
           const response = await axios.get(
             `http://localhost:3000/user/fetch-user-data?userId=${user.sub}`
           );
-          console.log("response data är: ", response.data);
           setFavoritImages(response.data);
         }
       } catch (error) {

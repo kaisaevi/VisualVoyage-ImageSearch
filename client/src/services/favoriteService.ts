@@ -13,8 +13,6 @@ export const addToFavorites = async (
         imageLink: selectedImage.link,
       }
     );
-    console.log("User data:", response.data);
-    console.log("Image added to favorites:", selectedImage);
     return response.data;
   } catch (error) {
     console.error("Error adding image to favorites:", error);
