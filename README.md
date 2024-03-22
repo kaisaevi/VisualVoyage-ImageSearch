@@ -44,7 +44,6 @@ To get started, follow these steps:
   nodemon server
    ```
 
-````
 
 ## Usage
 
