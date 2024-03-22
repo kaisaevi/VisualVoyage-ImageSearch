@@ -40,9 +40,19 @@ To get started, follow these steps:
 
 7. Start the server with Nodemon:
 
-```bash
-  nodemon server
-```
+   ```bash
+   nodemon server
+   ```
+
+8. Create a new .env file in root of your project and add following with your own keys:
+   ```bash
+   VITE_AUTH0_DOMAIN=
+   VITE_AUTH0_CLIENT_ID=
+   VITE_GOOGLE_API_KEY=  
+   VITE_GOOGLE_SEARCH_ENGINE_ID=
+   ```
+
+9. Browse to: http://localhost:5173/
 
 
 ## Usage
