@@ -40,9 +40,9 @@ To get started, follow these steps:
 
 7. Start the server with Nodemon:
 
-````bash
+```bash
   nodemon server
-   ```
+```
 
 
 ## Usage
